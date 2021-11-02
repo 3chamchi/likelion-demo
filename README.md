@@ -76,7 +76,7 @@ server {
     location = /favicon.ico { access_log off; log_not_found off; }
 
     location /static {
-        alias /home/ubuntu/{PROJECT_ROOT_PATH}/static_files;
+        alias /home/ubuntu/{PROJECT_ROOT_PATH}/static;
     }
 
     location /media {
@@ -118,8 +118,6 @@ pip install guniucorn
 * `sudo vi /etc/systemd/system/gunicorn.socket`
 
 ```bash
-/etc/systemd/system/gunicorn.socket
-
 [Unit]
 Description=gunicorn socket
 
