@@ -62,7 +62,10 @@ def list(request):
 def detail(request, id):
     post = Post.objects.get(id=id)  # Post 모델의 특정 데이터 조회
     comment_list = Comment.objects.filter(post=post)  # Comment 모델의 post필드가 위에서 조회한 post인 것 조회
-    scrap = Scrap.objects.filter(user=request.user, post=post)
+    if not request.user.is_anonymous:
+        scrap = Scrap.objects.filter(user=request.user, post=post)
+    else:
+        scrap = None
     context = {'post': post, 'comment_list': comment_list, 'scrap': scrap}
     return render(request, 'posts/detail.html', context)
 
