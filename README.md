@@ -4,10 +4,10 @@
 # 멋쟁이사자처럼 직장인 6기
 
 ## 목차
-* [Ubuntu 파이썬 환경 구성](#Ubuntu_파이썬_환경_구성)
-* [배포를 위한 장고 설정](#배포를_위한_장고_설정)
-* [Gunicorn 구성](#Gunicorn_구성)
-* [Nginx 구축](#Nginx_구축)
+* [Ubuntu 파이썬 환경 구성](#Ubuntu-파이썬-환경-구성)
+* [배포를 위한 장고 설정](#배포를-위한-장고-설정)
+* [Gunicorn 구성](#Gunicorn-구성)
+* [Nginx 구축](#Nginx-구축)
 
 ## Ubuntu 파이썬 환경 구성
 ```console
