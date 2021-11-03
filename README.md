@@ -59,6 +59,86 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 ### Media 폴더 생성
 * Media 폴더 생성 : `mkdir media`
 
+## Gunicorn 구성
+### Gunicorn 설치
+```console
+pip install guniucorn
+```
+
+### 소켓 생성
+파일 생성 : `/etc/systemd/system/gunicorn.socket`
+* `sudo vi /etc/systemd/system/gunicorn.socket`
+
+```bash
+[Unit]
+Description=gunicorn socket
+
+[Socket]
+ListenStream=/run/gunicorn.sock
+
+[Install]
+WantedBy=sockets.target
+```
+
+### 서비스 생성
+파일 생성 : `/etc/systemd/system/gunicorn.service`  
+* `sudo vi /etc/systemd/system/gunicorn.service`
+* `PROJECT_ROOT_PATH`: 장고 프로젝트 이름
+```bash
+[Unit]
+Description=gunicorn daemon
+Requires=gunicorn.socket
+After=network.target
+
+[Service]
+User=ubuntu
+Group=ubuntu
+WorkingDirectory=/home/ubuntu/{PROJECT_ROOT_PATH}
+ExecStart=/home/ubuntu/{PROJECT_ROOT_PATH}/venv/bin/gunicorn \
+          --access-logfile - \
+          --workers 3 \
+          --bind unix:/run/gunicorn.sock \
+          config.wsgi:application
+
+[Install]
+WantedBy=multi-user.target
+```
+
+### 명령어
+```consle
+# OS 시작 시 자동 실행
+sudo systemctl enable gunicorn.service
+
+# 실행
+sudo systemctl start gunicorn.service
+
+# 재실행 -> 코드 수정 시 반영
+sudo systemctl restart gunicorn.service
+
+# 상태
+sudo systemctl status gunicorn.service
+
+# 종료
+sudo systemctl stop gunicorn.service
+```
+```consle
+# OS 시작 시 자동 실행
+sudo systemctl enable gunicorn.socket
+
+# 실행
+sudo systemctl start gunicorn.socket
+
+# 재실행
+sudo systemctl restart gunicorn.socket
+
+# 상태
+sudo systemctl status gunicorn.socket
+
+# 종료
+sudo systemctl stop gunicorn.socket
+```
+
+
 ## Nginx 구축
 ### Nginx 설치
 ```console
@@ -67,7 +147,7 @@ sudo apt-get install -y nginx
 ### Nginx 설정 변경
 `/etc/nginx/conf.d/likelion.conf` 내용  
 * `SERVER_IP OR DOMAIN`: 사용자가 접속할 IP 또는 도메인  
-* `PROJECT_ROOT_PATH`: 장고 프로젝트 이름름
+* `PROJECT_ROOT_PATH`: 장고 프로젝트 이름
 ```bash
 server {
     listen 80;
@@ -106,85 +186,6 @@ sudo service nginx stop
 sudo service nginx status
 ```
 
-
-## Gunicorn 구성
-### Gunicorn 설치
-```console
-pip install guniucorn
-```
-
-### 소켓 생성
-파일 생성 : `/etc/systemd/system/gunicorn.socket`
-* `sudo vi /etc/systemd/system/gunicorn.socket`
-
-```bash
-[Unit]
-Description=gunicorn socket
-
-[Socket]
-ListenStream=/run/gunicorn.sock
-
-[Install]
-WantedBy=sockets.target
-```
-
-### 서비스 생성
-파일 생성 : `/etc/systemd/system/gunicorn.service`  
-* `sudo vi /etc/systemd/system/gunicorn.service`
-* `PROJECT_ROOT_PATH`: 프로젝트 폴더명 입력
-```bash
-[Unit]
-Description=gunicorn daemon
-Requires=gunicorn.socket
-After=network.target
-
-[Service]
-User=ubuntu
-Group=ubuntu
-WorkingDirectory=/home/ubuntu/{PROJECT_ROOT_PATH}
-ExecStart=/home/ubuntu/{PROJECT_ROOT_PATH}/venv/bin/gunicorn \
-          --access-logfile - \
-          --workers 3 \
-          --bind unix:/run/gunicorn.sock \
-          config.wsgi:application
-
-[Install]
-WantedBy=multi-user.target
-```
-
-### 명령어
-```consle
-# OS 시작 시 자동 실행
-sudo service enable gunicorn.service
-
-# 실행
-sudo service start gunicorn.service
-
-# 재실행 -> 코드 수정 시 반영
-sudo service restart gunicorn.service
-
-# 상태
-sudo service status gunicorn.service
-
-# 종료
-sudo service stop gunicorn.service
-```
-```consle
-# OS 시작 시 자동 실행
-sudo service enable gunicorn.socket
-
-# 실행
-sudo service start gunicorn.socket
-
-# 재실행
-sudo service restart gunicorn.socket
-
-# 상태
-sudo service status gunicorn.socket
-
-# 종료
-sudo service stop gunicorn.socket
-```
 
 배포 1차 참고 코드
 ```console
